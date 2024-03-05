@@ -1,0 +1,160 @@
+Certainly! If you'd like to remove the backslash ("\") characters from the code, you can do that. Here's the modified code without the backslashes:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Employee {
+    int empId;
+    char empName[50];
+    float empSalary;
+};
+
+void addEmployee(FILE *file);
+void displayEmployee(FILE *file);
+void updateEmployee(FILE *file);
+void deleteEmployee(FILE *file);
+
+int main() {
+    FILE *employeeFile;
+    int choice;
+
+    employeeFile = fopen("employee.dat", "rb+");
+
+    if (employeeFile == NULL) {
+        employeeFile = fopen("employee.dat", "wb+");
+        if (employeeFile == NULL) {
+            fprintf(stderr, "Error creating the file.\n");
+            exit(1);
+        }
+    }
+
+    do {
+        printf("\nEmployee Details Processing Menu\n");
+        printf("1. Add Employee\n");
+        printf("2. Display Employees\n");
+        printf("3. Update Employee\n");
+        printf("4. Delete Employee\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addEmployee(employeeFile);
+                break;
+            case 2:
+                displayEmployee(employeeFile);
+                break;
+            case 3:
+                updateEmployee(employeeFile);
+                break;
+            case 4:
+                deleteEmployee(employeeFile);
+                break;
+            case 5:
+                printf("Exiting the program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (choice != 5);
+
+    fclose(employeeFile);
+
+    return 0;
+}
+
+void addEmployee(FILE *file) {
+    struct Employee newEmployee;
+
+    printf("Enter employee ID: ");
+    scanf("%d", &newEmployee.empId);
+
+    printf("Enter employee name: ");
+    scanf("%s", newEmployee.empName);
+
+    printf("Enter employee salary: ");
+    scanf("%f", &newEmployee.empSalary);
+
+    fseek(file, 0, SEEK_END);
+
+    fwrite(&newEmployee, sizeof(struct Employee), 1, file);
+
+    printf("Employee added successfully.\n");
+}
+
+void displayEmployee(FILE *file) {
+    struct Employee currentEmployee;
+
+    rewind(file);
+
+    printf("\nEmployee Details:\n");
+    printf("ID\tName\t\tSalary\n");
+
+    while (fread(&currentEmployee, sizeof(struct Employee), 1, file) == 1) {
+        printf("%d\t%s\t\t%.2f\n", currentEmployee.empId, currentEmployee.empName, currentEmployee.empSalary);
+    }
+}
+
+void updateEmployee(FILE *file) {
+    struct Employee updatedEmployee;
+    int targetId;
+
+    printf("Enter the ID of the employee to update: ");
+    scanf("%d", &targetId);
+
+    rewind(file);
+
+    while (fread(&updatedEmployee, sizeof(struct Employee), 1, file) == 1) {
+        if (updatedEmployee.empId == targetId) {
+            printf("Enter new details for the employee with ID %d:\n", targetId);
+
+            printf("Enter employee name: ");
+            scanf("%s", updatedEmployee.empName);
+
+            printf("Enter employee salary: ");
+            scanf("%f", &updatedEmployee.empSalary);
+
+            fseek(file, -sizeof(struct Employee), SEEK_CUR);
+
+            fwrite(&updatedEmployee, sizeof(struct Employee), 1, file);
+
+            printf("Employee updated successfully.\n");
+            return;
+        }
+    }
+
+    printf("Employee with ID %d not found.\n", targetId);
+}
+
+void deleteEmployee(FILE *file) {
+    struct Employee deletedEmployee;
+    int targetId;
+
+    printf("Enter the ID of the employee to delete: ");
+    scanf("%d", &targetId);
+
+    rewind(file);
+
+    FILE *tempFile = fopen("temp.dat", "wb");
+
+    while (fread(&deletedEmployee, sizeof(struct Employee), 1, file) == 1) {
+        if (deletedEmployee.empId == targetId) {
+            printf("Employee with ID %d deleted successfully.\n", targetId);
+        } else {
+            fwrite(&deletedEmployee, sizeof(struct Employee), 1, tempFile);
+        }
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    remove("employee.dat");
+    rename("temp.dat", "employee.dat");
+
+    file = fopen("employee.dat", "rb+");
+}
+```
+
+This version of the code should be without the backslashes.
