@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+int main() {
+    // fcntl - File control
+    int file_descriptor = open("example.txt", O_RDONLY);
+    fcntl(file_descriptor, F_SETFL, O_NONBLOCK);
+
+    // seek - File positioning
+    lseek(file_descriptor, 0, SEEK_SET);
+
+    // stat - File status
+    struct stat file_stat;
+    stat("example.txt", &file_stat);
+    printf("File size: %ld bytes\n", file_stat.st_size);
+
+    // opendir and readdir - Directory handling
+    DIR *dir = opendir(".");
+    struct dirent *dir_entry;
+
+    printf("\nList of files in the current directory:\n");
+    while ((dir_entry = readdir(dir)) != NULL) {
+        printf("%s\n", dir_entry->d_name);
+    }
+    closedir(dir);
+
+    close(file_descriptor);
+
+    return 0;
+}
