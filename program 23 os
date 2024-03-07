@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void SCAN(int arr[], int head, int size) {
+    int distance = 0;
+    int cur_track;
+    int left, right;
+
+    // Assuming maximum track number is 199
+    int max_track = 199;
+
+    // Sort the requests
+    for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (arr[i] > arr[j]) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+
+    // Finding the closest request to the left and right of the current head
+    for (int i = 0; i < size; i++) {
+        if (arr[i] > head) {
+            left = i - 1;
+            right = i;
+            break;
+        }
+    }
+
+    // Scanning towards the right
+    for (int i = right; i < size; i++) {
+        cur_track = arr[i];
+        printf("Move from %d to %d with distance %d\n", head, cur_track, abs(head - cur_track));
+        distance += abs(head - cur_track);
+        head = cur_track;
+    }
+
+    // Scanning towards the left
+    for (int i = left; i >= 0; i--) {
+        cur_track = arr[i];
+        printf("Move from %d to %d with distance %d\n", head, cur_track, abs(head - cur_track));
+        distance += abs(head - cur_track);
+        head = cur_track;
+    }
+
+    printf("Total distance: %d\n", distance);
+}
+
+int main() {
+    int requests[] = {98, 183, 37, 122, 14, 124, 65, 67};
+    int head = 53;
+    int size = sizeof(requests) / sizeof(requests[0]);
+
+    SCAN(requests, head, size);
+
+    return 0;
+}
