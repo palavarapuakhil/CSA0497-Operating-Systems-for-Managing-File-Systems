@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <pthread.h>
+
+void *thread_function(void *arg) {
+    printf("Thread created!\n");
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t thread_id;
+    pthread_create(&thread_id, NULL, thread_function, NULL);
+    pthread_join(thread_id, NULL);
+
+    if (pthread_equal(pthread_self(), thread_id))
+        printf("Main thread and created thread are equal.\n");
+
+    printf("Main thread exiting.\n");
+    pthread_exit(NULL);
+}
